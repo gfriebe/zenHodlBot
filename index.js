@@ -1,10 +1,15 @@
 const Telegraf = require('telegraf');
+const commandParts = require('telegraf-command-parts');
 const app = new Telegraf(process.env.BOT_TOKEN);
+app.use(commandParts());
 
-var cryptoMod = require('./cryptoMod');
+let cryptoMod = require("./cryptoMod");
 
-app.hears('hi', ctx => {  		
-  return ctx.reply( cryptoMod.currentRate());  
+app.command('rate', ctx => {
+	var coin = ctx.state.command.splitArgs[0];
+	cryptoMod.currentRate(coin, function(response){
+		return ctx.reply( response ); 
+	})
 });
 
 app.startPolling();

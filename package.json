@@ -5,7 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "node-coinmarketcap": "^0.2.0",
-    "telegraf": "^3.28.0"
+    "telegraf": "^3.28.0",
+    "telegraf-command-parts": "^1.0.3"
   },
   "devDependencies": {},
   "scripts": {

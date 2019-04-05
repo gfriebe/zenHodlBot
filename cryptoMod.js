@@ -1,10 +1,8 @@
 var CoinMarketCap = require("node-coinmarketcap");
 var coinmarketcap = new CoinMarketCap();
 
-exports.currentRate = function (coin = 'BTC') {
-  var resp;
-  coinmarketcap.multi(coins => {
-  	resp = coins.get('BTC').price_usd; 
-  });
-  return resp;
+exports.currentRate =  function (coin = 'BTC', cback) {
+      coinmarketcap.multi(async coins => {
+      	cback(coins.get(coin).price_usd);
+      });
 };
