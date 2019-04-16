@@ -4,12 +4,11 @@ const commandParts = require('telegraf-command-parts');
 const app = new Telegraf(process.env.BOT_TOKEN);
 app.use(commandParts());
 
-let cryptoMod = require("./cryptoMod");
-let redis = require("./redis");
+let store = require("./storage");
 
 app.command('start', ctx => {
-	text =
-	`Welcome to the zen way of hodling crypto!
+  text =
+    `Welcome to the zen way of hodling crypto!
 
 	(This is in alpha and currently not fully functionl. No expectations for norhing.)
 
@@ -35,67 +34,81 @@ app.command('start', ctx => {
 	So, set up your prices, remove all other direct crypto information channels from phone and laptop and live your life more meaningful and happy ever after.
 	Type /help to get started!
 	`
-	return ctx.reply(text)
+  return ctx.reply(text)
 });
 
 app.command('help', ctx => {
-	var help = 
-	`/start 				- Show the Welcome message
+  var help =
+    `/start 				- Show the Welcome message
 	/add coin price			- Adds an alert price for this coin (I will send an alert once the value exceeds or falls below this price)
 	/remove coin [price] 	- Removes prices or a specific price (if given) for a coin
 	/list					- Show all coins current broad values based on the prices you set
+	/notify	(on|off)		- with parameter turns notifications on and off, without shows status				
 	/help					- Show help options
 `
-	return ctx.reply(help)
+  return ctx.reply(help)
 });
 
-app.command('rate', ctx => {
-	var coin = ctx.state.command.splitArgs[0];
-	cryptoMod.currentRate(coin, function(response){
-		return ctx.reply( response || 'there is no such coin'); 
-	})
+app.command('rate', async ctx => {
+  let coin = ctx.state.command.splitArgs[0];
+  let resp = await store.getRateFor(coin)
+
+  return ctx.reply(resp || 'there is no such coin');
 });
 
-app.command('list', ctx => {	
-	redis.list(ctx.from.id, function(response){
-		return ctx.reply( response ); 
-	})
+app.command('list', async ctx => {
+  resp = await store.list(ctx.from.id);
+  ctx.reply(resp);
 });
 
-app.command('add', ctx => {				
-	var args = ctx.state.command.splitArgs;
-	
-	if(!args[1]) {
-		return ctx.reply( 'Please provide coin and price' ); 	
-	}
+app.command('add', async ctx => {
+  let args = ctx.state.command.splitArgs;
 
-	cryptoMod.currentRate(args[0], function(response){
-		if(response != undefined) {
-			redis.add_price(ctx.from.id, args[0], args[1], function(response){
-				return ctx.reply( response ); 		
-			})		
-		}else{
-			return ctx.reply('there is no such coin'); 
-		}
-		
-	})
+  if (!args[1]) {
+    return ctx.reply('Please provide coin and price');
+  }
+
+  let all_coins = await store.all_coins();
+
+  if(all_coins.includes(args[0])) {
+    let resp = await store.add_price(ctx.from.id, args[0], args[1])
+    return ctx.reply(resp);
+
+  } else {
+    return ctx.reply('there is no such coin');
+  }
 
 });
 
-app.command('remove', ctx => {				
-	var args = ctx.state.command.splitArgs;
-	
-	if(!args[0]) {
-		return ctx.reply( 'Please provide at least a coin' ); 	
-	}else if(!args[1]) {
-		redis.remove_coin(ctx.from.id, args[0], function(response){
-			return ctx.reply( response ); 		
-		})		
-	}else {
-		redis.remove_price(ctx.from.id, args[0], args[1], function(response){
-			return ctx.reply( response ); 		
-		})		
-	}
+app.command('remove', async ctx => {
+  var args = ctx.state.command.splitArgs;
+
+  if (!args[0]) {
+    return ctx.reply('Please provide at least a coin');
+  } else if (!args[1]) {
+    resp = await store.remove_coin(ctx.from.id, args[0])
+    return ctx.reply(resp);
+
+  } else {
+    resp = await store.remove_price(ctx.from.id, args[0], args[1])
+    return ctx.reply(resp);
+
+  }
+
+});
+
+app.command('notify', ctx => {
+  var args = ctx.state.command.splitArgs;
+
+  if (args[0] == 'on' || args[0] == 'off') {
+    store.toggle_notify(ctx.from.id, args[0], function (response) {
+      return ctx.reply('Notification is ' + (response == 1 ? 'on' : 'off'));
+    })
+  } else {
+    store.notify_for_user(ctx.from.id, function (response) {
+      return ctx.reply('Notification is ' + (response == 1 ? 'on' : 'off'));
+    })
+  }
 
 });
 
