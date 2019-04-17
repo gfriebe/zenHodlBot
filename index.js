@@ -41,10 +41,11 @@ app.command('help', ctx => {
   var help =
     `/start 				- Show the Welcome message
 	/add coin price			- Adds an alert price for this coin (I will send an alert once the value exceeds or falls below this price)
-	/remove coin [price] 	- Removes prices or a specific price (if given) for a coin
-	/list					- Show all coins current broad values based on the prices you set
-	/notify	(on|off)		- with parameter turns notifications on and off, without shows status				
-	/help					- Show help options
+	/remove coin [price] 	- Removes coin or a specific price (if given)
+	/list					- Show all coins and its alert prices 
+	/state        - current broad values for your coins
+	/notify	(on|off)		- turns daily status updates on or off				
+	/help					- Show this help
 `
   return ctx.reply(help)
 });

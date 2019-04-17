@@ -30,7 +30,7 @@ exports.remove_price = async function(user_id, coin, price) {
 
     await client.srem(_coin_key(user_id, coin), price);
 
-    amount = await client.scard(_coin_key(user_id, coin))
+    let amount = await client.scard(_coin_key(user_id, coin))
     
     if(amount == 0) {
         _remove_coin(user_id, coin);
@@ -41,7 +41,7 @@ exports.remove_price = async function(user_id, coin, price) {
 
 exports.list = async function(user_id) {
     let _list = {};
-    _coins = await _get_coins(user_id);
+    let _coins = await _get_coins(user_id);
 
     for (let _coin of _coins) {
         _list[_coin] = await _get_coin(user_id, _coin)
@@ -89,7 +89,7 @@ exports.getRateFor = async (coin) => {
 _updateCoinData = async () => {
     let all_coins = await client.smembers(allCoinsKey)
 
-    if(all_coins.length == 0) {
+    if(all_coins.length != 0) {
         const coins =  await crypto.getRates()
         for(let coin of coins){
             client.sadd(allCoinsKey, coin['symbol'].toLowerCase())
@@ -106,7 +106,8 @@ _remove_coin = function(user_id, coin) {
 
 _get_coin = async function(user_id, coin) {
     response = await client.smembers(coin + '_' + user_id);
-    return(response.sort());
+    ordered = response.sort(function(a, b){return parseInt(a)-parseInt(b)});
+    return(ordered);
 }
 
 _get_coins = async function(user_id) {
