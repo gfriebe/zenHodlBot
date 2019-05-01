@@ -110,7 +110,7 @@ _coins_key = function(user_id) {
 }
 
 client.on('connect', function() {
-    console.log('Redis client connected');
+    //console.log('Redis client connected');
 })
 
 client.on('error', function (err) {
