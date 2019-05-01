@@ -42,12 +42,12 @@ app.command('start', ctx => {
 
 app.command(['help','h'], ctx => {
   const help =
-    `/start 				- Show the Welcome message
-/add coin price			- Adds an alert price for this coin (I will send an alert once the value exceeds or falls below this price)
-/remove coin [price] 	- Removes coin or a specific price (if given)
-/list					- Show all coins and its alert prices
-/state        - current broad values for your coins
-/help					- Show this help
+    `/start   > Show the welcome message
+/add coin price   > Adds an alert price for this coin (I will send an alert once the value exceeds or falls below this price) e.g. /add eth 250
+/remove coin [price] 	 > Removes coin or a specific price (if given)  e.g. /remove eth 250 or  e.g. /remove eth
+/list   > Show all coins and its alert prices
+/state   > current broad values for your coins
+/help   > Show this help
     
 You can also just use the first letter like /s for state.
 `
