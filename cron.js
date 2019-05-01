@@ -1,10 +1,12 @@
 #!/usr/bin/env node
+const _fs = require('fs');
+const _token = _fs.readFileSync('telegram.token', 'utf8');
 
 const asyncRedis = require("async-redis")
 const client = asyncRedis.createClient()
 
 const Telegraf = require('telegraf');
-const app = new Telegraf(process.env.BOT_TOKEN);
+const app = new Telegraf(_token);
 
 let store = require("./storage");
 const allCoinsKey = 'all_coins'

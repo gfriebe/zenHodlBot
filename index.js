@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+const _fs = require('fs');
+const _token = _fs.readFileSync('telegram.token', 'utf8');
 
 const Telegraf = require('telegraf');
 const commandParts = require('telegraf-command-parts');
 
-const app = new Telegraf(process.env.BOT_TOKEN);
+const app = new Telegraf(_token);
 app.use(commandParts());
 
 let store = require("./storage");
