@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const asyncRedis = require("async-redis")
 const client = asyncRedis.createClient()
 

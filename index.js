@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const Telegraf = require('telegraf');
 const commandParts = require('telegraf-command-parts');
 
