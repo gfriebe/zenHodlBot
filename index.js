@@ -43,7 +43,7 @@ app.command('start', ctx => {
 app.command(['help','h'], ctx => {
   const help =
     `/start   > Show the welcome message
-/add coin price   > Adds an alert price for this coin (I will send an alert once the value exceeds or falls below this price) e.g. /add eth 250
+/add coin price   > Adds an alert price in USD for this coin (I will send an alert once the value exceeds or falls below this price) e.g. /add eth 250
 /remove coin [price] 	 > Removes coin or a specific price (if given)  e.g. /remove eth 250 or  e.g. /remove eth
 /list   > Show all coins and its alert prices
 /state   > current broad values for your coins
@@ -131,9 +131,9 @@ app.command(['state', 's'], async ctx => {
     if(value_index == 0){
       _msg = 'is below' + mixed_rates[1]
     }else if(value_index == mixed_rates.length - 1){
-      _msg = 'is above ' + mixed_rates[mixed_rates.length - 2];
+      _msg = 'is above $ ' + mixed_rates[mixed_rates.length - 2];
     }else{
-      _msg = 'is between ' + mixed_rates[value_index - 1] + ' and ' + mixed_rates[value_index + 1]
+      _msg = 'is between $ ' + mixed_rates[value_index - 1] + ' and $ ' + mixed_rates[value_index + 1]
     }
 
     msg = msg + `\n${coin} ${_msg}`;
