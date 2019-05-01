@@ -107,7 +107,7 @@ app.command(['remove','r'], async ctx => {
     }else{
       return ctx.reply(`${args[0]}: ${resp.join(', ')}`);
     }
-    
+
   }
 
 });
@@ -131,7 +131,7 @@ app.command(['state', 's'], async ctx => {
     if(value_index == 0){
       _msg = 'is below' + mixed_rates[1]
     }else if(value_index == mixed_rates.length - 1){
-      _msg = 'is above' + mixed_rates[mixed_rates.length - 2];
+      _msg = 'is above ' + mixed_rates[mixed_rates.length - 2];
     }else{
       _msg = 'is between ' + mixed_rates[value_index - 1] + ' and ' + mixed_rates[value_index + 1]
     }

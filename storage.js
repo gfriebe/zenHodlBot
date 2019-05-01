@@ -62,7 +62,7 @@ exports.all_coins = async function(){
 
 exports.getRateFor = async (coin) => {
     await _updateCoinData()
-        const coin_data = await client.hgetall('coin_' + coin.toLowerCase())
+    const coin_data = await client.hgetall('coin_' + coin.toLowerCase())
 
     if(coin_data != undefined) {
         return(coin_data['price_usd'])

@@ -18,16 +18,15 @@ run = async function () {
   let users = await store.all_users();
 
   for (let user of users) {
-
     let coins = await store.list(user);
 
-    Object.entries(coins).forEach(async coin => {
-      const coin_name = coin[0];
-      const rates = coin[1];
-      const current_rate = await store.getRateFor(coin_name)
-      const compare_rate = await _getCompareRateFor(coin_name)
 
-      if (current_rate != undefined && compare_rate != undefined) {
+    for (let coin in coins) {
+      const rates = coins[coin];
+      const current_rate = await store.getRateFor(coin)
+      const compare_rate = await _getCompareRateFor(coin)
+
+      if (current_rate != undefined && compare_rate != undefined && current_rate != compare_rate) {
 
         let mixed_rates = rates.concat([compare_rate, current_rate])
 
@@ -41,18 +40,20 @@ run = async function () {
         }
 
         let text
+
         if (current_rate > compare_rate) {
-          text = 'is now above' + mixed_rates[mixed_rates.indexOf(current_rate) - 1]
+          text = ' is now above ' + mixed_rates[mixed_rates.indexOf(current_rate) - 1]
         } else {
-          text = 'is now below' + mixed_rates[mixed_rates.indexOf(current_rate) + 1]
+          text = ' is now below ' + mixed_rates[mixed_rates.indexOf(current_rate) + 1]
         }
-        app.telegram.sendMessage(user, coin_name + text);
+
         alerts += 1;
+        await app.telegram.sendMessage(user, coin + text);
       }
-    })
+    }
   }
 
-  _storeCompareCoinData();
+  await _storeCompareCoinData();
 
   const time = new Date()
   const human_time = `${time.getDate()}.${time.getMonth() + 1}.${time.getFullYear()} ${time.getHours()}:${time.getMinutes()}`
