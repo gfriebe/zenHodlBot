@@ -43,8 +43,7 @@ app.command('help', ctx => {
 	/add coin price			- Adds an alert price for this coin (I will send an alert once the value exceeds or falls below this price)
 	/remove coin [price] 	- Removes coin or a specific price (if given)
 	/list					- Show all coins and its alert prices 
-	/state        - current broad values for your coins
-	/notify	(on|off)		- turns daily status updates on or off				
+	/state        - current broad values for your coins					
 	/help					- Show this help
 `
   return ctx.reply(help)
@@ -98,18 +97,34 @@ app.command('remove', async ctx => {
 
 });
 
-app.command('notify', ctx => {
-  var args = ctx.state.command.splitArgs;
+app.command('status', async ctx => {
 
-  if (args[0] == 'on' || args[0] == 'off') {
-    store.toggle_notify(ctx.from.id, args[0], function (response) {
-      return ctx.reply('Notification is ' + (response == 1 ? 'on' : 'off'));
-    })
-  } else {
-    store.notify_for_user(ctx.from.id, function (response) {
-      return ctx.reply('Notification is ' + (response == 1 ? 'on' : 'off'));
-    })
+  const coins = await store.list(ctx.from.id);
+  let msg = ''
+
+  for (let coin in coins) {
+    const value = await store.getRateFor(coin);
+    let mixed_rates = coins[coin].concat(value)
+
+    mixed_rates = mixed_rates.sort(function (a, b) {
+      return parseFloat(a) - parseFloat(b)
+    });
+
+    const value_index = mixed_rates.indexOf(value)
+    let _msg = ''
+
+    if(value_index == 0){
+      _msg = 'is below' + mixed_rates[1]
+    }else if(value_index == mixed_rates.length - 1){
+      _msg = 'is above' + mixed_rates[mixed_rates.length - 2];
+    }else{
+      _msg = 'is between ' + mixed_rates[value_index - 1] + ' and ' + mixed_rates[value_index + 1]
+    }
+
+    msg = msg + `\n${coin}  ${_msg}`;
   }
+
+  ctx.reply(msg);
 
 });
 

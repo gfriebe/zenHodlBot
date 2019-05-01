@@ -3,12 +3,13 @@ const client = asyncRedis.createClient()
 
 const crypto = require("./crypto");
 
-const userNotifyListKey = 'user_notify_list'
+const userListKey = 'user_list'
 const allCoinsKey = 'all_coins'
 
-exports.add_price = async function (user_id, coin, price) {     
+exports.add_price = async function (user_id, coin, price) {
+    client.sadd(userListKey, user_id);
     coin = coin.toLowerCase();
-    price = parseInt(price);
+    price = parseFloat(price);
     
     client.sadd(_coins_key(user_id), coin)
     await client.sadd(_coin_key(user_id, coin), price)
@@ -26,7 +27,7 @@ exports.remove_coin = async function(user_id, coin, cback) {
 
 exports.remove_price = async function(user_id, coin, price) {
     coin = coin.toLowerCase();
-    price = parseInt(price);
+    price = parseFloat(price);
 
     await client.srem(_coin_key(user_id, coin), price);
 
@@ -50,22 +51,8 @@ exports.list = async function(user_id) {
     return(_list);
 } 
 
-exports.toggle_notify = async function(user_id, action, cback) {
-    if(action == 'on'){
-        cback(await client.sadd(userNotifyListKey, user_id))
-    }else if(action == 'off'){
-        cback(await client.srem(userNotifyListKey, user_id))
-    }else {
-        cback('invalid action')
-    }
-}
-
-exports.notify_for_user = async function(user_id, cback) {
-    cback(await client.sismember(userNotifyListKey, user_id))
-}
-
-exports.users_to_notify = async function() {
-    return await client.smembers(userNotifyListKey)
+exports.all_users = async function() {
+    return await client.smembers(userListKey)
 }
 
 exports.all_coins = async function(){
@@ -75,7 +62,7 @@ exports.all_coins = async function(){
 
 exports.getRateFor = async (coin) => {
     await _updateCoinData()
-    const coin_data = await client.hgetall('coin_' + coin.toLowerCase())
+        const coin_data = await client.hgetall('coin_' + coin.toLowerCase())
 
     if(coin_data != undefined) {
         return(coin_data['price_usd'])
@@ -85,11 +72,10 @@ exports.getRateFor = async (coin) => {
 }
 
 
-
 _updateCoinData = async () => {
     let all_coins = await client.smembers(allCoinsKey)
 
-    if(all_coins.length != 0) {
+    if(all_coins.length == 0) {
         const coins =  await crypto.getRates()
         for(let coin of coins){
             client.sadd(allCoinsKey, coin['symbol'].toLowerCase())
@@ -106,7 +92,7 @@ _remove_coin = function(user_id, coin) {
 
 _get_coin = async function(user_id, coin) {
     response = await client.smembers(coin + '_' + user_id);
-    ordered = response.sort(function(a, b){return parseInt(a)-parseInt(b)});
+    ordered = response.sort(function(a, b){return parseFloat(a)-parseFloat(b)});
     return(ordered);
 }
 
