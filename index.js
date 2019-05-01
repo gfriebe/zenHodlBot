@@ -54,7 +54,7 @@ You can also just use the first letter like /s for state.
   return ctx.reply(help)
 });
 
-app.command(['rate','r'], async ctx => {
+app.command(['rate'], async ctx => {
   let coin = ctx.state.command.splitArgs[0];
   let resp = await store.getRateFor(coin)
 
@@ -83,7 +83,7 @@ app.command(['add','a'], async ctx => {
 
   if(all_coins.includes(args[0])) {
     let resp = await store.add_price(ctx.from.id, args[0], args[1])
-    return ctx.reply(resp);
+    return ctx.reply(`${args[0]}: ${resp.join(', ')}`);
 
   } else {
     return ctx.reply('there is no such coin');
@@ -92,18 +92,22 @@ app.command(['add','a'], async ctx => {
 });
 
 app.command(['remove','r'], async ctx => {
-  var args = ctx.state.command.splitArgs;
+  const args = ctx.state.command.splitArgs;
 
   if (!args[0]) {
-    return ctx.reply('Please provide at least a coin');
+    return ctx.reply('Please provide at least a coin name, like btc.');
   } else if (!args[1]) {
-    resp = await store.remove_coin(ctx.from.id, args[0])
-    return ctx.reply(resp);
+    store.remove_coin(ctx.from.id, args[0])
+    return ctx.reply(`${args[0]} has no more price points`);
 
   } else {
-    resp = await store.remove_price(ctx.from.id, args[0], args[1])
-    return ctx.reply(resp);
-
+    let resp = await store.remove_price(ctx.from.id, args[0], args[1])
+    if(resp.length == 0){
+      return ctx.reply(`${args[0]} has no more price points`);
+    }else{
+      return ctx.reply(`${args[0]}: ${resp.join(', ')}`);
+    }
+    
   }
 
 });
@@ -132,7 +136,7 @@ app.command(['state', 's'], async ctx => {
       _msg = 'is between ' + mixed_rates[value_index - 1] + ' and ' + mixed_rates[value_index + 1]
     }
 
-    msg = msg + `\n${coin}  ${_msg}`;
+    msg = msg + `\n${coin} ${_msg}`;
   }
 
   ctx.reply(msg);
