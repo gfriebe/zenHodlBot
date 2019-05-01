@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const _fs = require('fs');
-const _token = _fs.readFileSync('telegram.token', 'utf8');
+const _token = _fs.readFileSync(__dirname + '/telegram.token', 'utf8');
 
 const asyncRedis = require("async-redis")
 const client = asyncRedis.createClient()
