@@ -13,6 +13,8 @@ const allCoinsKey = 'all_coins'
 
 run = async function () {
 
+  let alerts = 0
+
   let users = await store.all_users();
 
   for (let user of users) {
@@ -45,12 +47,16 @@ run = async function () {
           text = 'is now below' + mixed_rates[mixed_rates.indexOf(current_rate) + 1]
         }
         app.telegram.sendMessage(user, coin_name + text);
-
+        alerts += 1;
       }
     })
   }
 
   _storeCompareCoinData();
+
+  const time = new Date()
+  const human_time = `${time.getDate()}.${time.getMonth() + 1}.${time.getFullYear()} ${time.getHours()}:${time.getMinutes()}`
+  console.log(`${human_time}: alerts send to ${alerts} users`)
   process.exit();
 }
 
