@@ -62,8 +62,14 @@ app.command(['rate','r'], async ctx => {
 });
 
 app.command(['list','l'], async ctx => {
-  resp = await store.list(ctx.from.id);
-  ctx.reply(resp);
+  const coins = await store.list(ctx.from.id);
+  let msg = ''
+
+  for (let coin in coins) {
+    msg = msg + `${coin}: ${coins[coin].join(', ')}\n`
+  }
+
+  ctx.reply(msg);
 });
 
 app.command(['add','a'], async ctx => {
