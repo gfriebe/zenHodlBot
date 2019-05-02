@@ -36,7 +36,7 @@ run = async function () {
 
         // there is no user value between the current rate and the compare rate
         if (Math.abs(mixed_rates.indexOf(current_rate) - mixed_rates.indexOf(compare_rate)) == 1) {
-          return;
+          continue;
         }
 
         let text
