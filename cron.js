@@ -41,7 +41,7 @@ run = async function () {
 
         let text
 
-        if (current_rate > compare_rate) {
+        if (parseFloat(current_rate) > parseFloat(compare_rate)) {
           text = ' is now above $ ' + mixed_rates[mixed_rates.indexOf(current_rate) - 1]
         } else {
           text = ' is now below $ ' + mixed_rates[mixed_rates.indexOf(current_rate) + 1]

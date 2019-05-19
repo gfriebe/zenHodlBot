@@ -129,7 +129,7 @@ app.command(['state', 's'], async ctx => {
     let _msg = ''
 
     if(value_index == 0){
-      _msg = 'is below' + mixed_rates[1]
+      _msg = 'is below ' + mixed_rates[1]
     }else if(value_index == mixed_rates.length - 1){
       _msg = 'is above $ ' + mixed_rates[mixed_rates.length - 2];
     }else{
